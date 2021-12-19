@@ -1,0 +1,163 @@
+---
+- name: Check if subnet control users already exist
+  uri:
+    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/keystore"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: keystore.listUsers
+      id: 1
+  register: users_list_res
+
+- name: Create subnet control user
+  uri:
+    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/keystore"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: keystore.createUser
+      params:
+        username: "{{ avalanche_subnet_control_username }}"
+        password: "{{ avalanche_subnet_control_password }}"
+      id: 1
+  when: avalanche_subnet_control_username not in users_list_res.json.result.users
+  register: users_create_res
+  failed_when: users_create_res.json.error is defined
+
+- name: Create subnet control addresses on P-Chain
+  uri:
+    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/bc/P"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: platform.createAddress
+      params:
+        username: "{{ avalanche_subnet_control_username }}"
+        password: "{{ avalanche_subnet_control_password }}"
+      id: "{{ item }}"
+  loop: "{{ range(1, avalanche_subnet_threshold + 1) }}"
+  register: addresses_create_res
+  failed_when: addresses_create_res.json.error is defined
+
+- name: Set p_chain_control_addresses
+  set_fact:
+    p_chain_control_addresses: "{{ addresses_create_res | json_query('results[*].json.result.address') }}"
+
+- name: Create subnet control address on X-Chain
+  uri:
+    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/bc/X"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: avm.createAddress
+      params:
+        username: "{{ avalanche_subnet_control_username }}"
+        password: "{{ avalanche_subnet_control_password }}"
+      id: 1
+  register: address_create_res
+  failed_when: address_create_res.json.error is defined
+
+- name: Set x_chain_control_address
+  set_fact:
+    x_chain_control_address: "{{ address_create_res.json.result.address }}"
+
+- name: Fund control user on X-Chain
+  include_tasks: submit-transaction-x.yml
+  vars:
+    method: avm.send
+    params:
+      username: "{{ avalanche_fund_username }}"
+      password: "{{ avalanche_fund_password }}"
+      amount: "{{ (avalanche_fund_amount_navax * 1.1) | int }}"
+      assetID: AVAX
+      to: "{{ x_chain_control_address }}"
+
+- name: Export AVAX from X-Chain to P-Chain
+  include_tasks: submit-transaction-x.yml
+  vars:
+    method: avm.export
+    params:
+      username: "{{ avalanche_subnet_control_username }}"
+      password: "{{ avalanche_subnet_control_password }}"
+      amount: "{{ avalanche_fund_amount_navax }}"
+      assetID: AVAX
+      from: "{{ [x_chain_control_address] }}"
+      to: "{{ p_chain_control_addresses[0] }}"
+
+- name: Import AVAX to P-Chain addresses
+  include_tasks: submit-transaction-p.yml
+  vars:
+    method: platform.importAVAX
+    params:
+      username: "{{ avalanche_subnet_control_username }}"
+      password: "{{ avalanche_subnet_control_password }}"
+      from: "{{ p_chain_control_addresses }}"
+      to: "{{ p_chain_control_addresses[0] }}"
+      sourceChain: X
+
+- name: Create subnet
+  include_tasks: submit-transaction-p.yml
+  vars:
+    method: platform.createSubnet
+    params:
+      controlKeys: "{{ p_chain_control_addresses }}"
+      threshold: "{{ avalanche_subnet_threshold }}"
+      username: "{{ avalanche_subnet_control_username }}"
+      password: "{{ avalanche_subnet_control_password }}"
+
+- name: Get subnet ID
+  uri:
+    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/P"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: platform.getSubnets
+      params: {}
+      id: 1
+  register: subnets_list_res
+  failed_when: subnets_list_res.json.error is defined
+
+- name: Set subnet_info
+  set_fact:
+    subnet_info: "{{ (subnets_list_res.json.result | json_query('subnets[?contains(controlKeys, `' + p_chain_control_addresses[0] + '`)]'))[0] }}"
+
+- name: Get validators node IDs
+  uri:
+    url: "http://{{ avalanche_nodes[item].host }}:{{ avalanche_nodes[item].port }}/ext/info"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: info.getNodeID
+      params: {}
+      id: 1
+  register: node_ids_res
+  failed_when: node_ids_res.json.error is defined
+  loop: "{{ avalanche_subnet_validators_list }}"
+
+- name: Set validators_ids
+  set_fact:
+    validators_ids: "{{ node_ids_res | json_query('results[*].json.result.nodeID') }}"
+
+- name: Add validators to the subnet
+  include_tasks: submit-transaction-p.yml
+  vars:
+    method: platform.addSubnetValidator
+    params:
+      nodeID: "{{ item }}"
+      subnetID: "{{ subnet_info.id }}"
+      startTime: "{{ avalanche_subnet_starttime }}"
+      endTime: "{{ avalanche_subnet_endtime }}"
+      weight: "{{ avalanche_subnet_validators_weight }}"
+      username: "{{ avalanche_subnet_control_username }}"
+      password: "{{ avalanche_subnet_control_password }}"
+  loop: "{{ validators_ids }}"
+
+- name: Display subnet information
+  debug:
+    var: subnet_info

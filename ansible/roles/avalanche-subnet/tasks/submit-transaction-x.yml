@@ -1,0 +1,34 @@
+---
+- name: "X-Chain: call method {{ method }}"
+  uri:
+    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/bc/X"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "{{ method }}"
+      params: "{{ params }}"
+      id: 1
+  register: call_res
+  failed_when: call_res.json.error is defined
+
+- block:
+    - name: "X-Chain: wait for tx {{ call_res.json.result.txID }}"
+      uri:
+        url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/bc/X"
+        method: POST
+        body_format: json
+        body:
+          jsonrpc: "2.0"
+          method: avm.getTxStatus
+          params:
+            txID: "{{ call_res.json.result.txID }}"
+          id: 1
+      register: tx_status_res
+      until: tx_status_res.json.result.status == "Accepted"
+      failed_when: tx_status_res.json.result.status in ["Rejected", "Unknown"]
+
+  rescue:
+    - name: Retry call because tx status is 'Unknown'
+      include_tasks: submit-transaction-x.yml
+      when: (tx_status_res.json.result.status | default("Rejected")) == "Unknown"

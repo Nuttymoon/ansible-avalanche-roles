@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  roles:
+    - role: avalanche-subnet
+      vars:
+        avalanche_api_port: 9661
