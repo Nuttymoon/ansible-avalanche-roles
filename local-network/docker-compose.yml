@@ -11,6 +11,8 @@ x-services:
     volumes:
       - ./avalanchego/certs:/avalanchego/certs
       - ./avalanchego/start.sh:/avalanchego/start.sh
+      - ./avalanchego/vm-aliases.json:/avalanchego/vm-aliases.json
+      - ./avalanchego/plugins/timestampvm:/avalanchego/build/plugins/timestampvm
     depends_on:
       - avalanchego-1
 

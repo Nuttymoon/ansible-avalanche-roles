@@ -20,4 +20,6 @@ fi
 	--bootstrap-ids="$bootstrap_id" \
 	--log-level=debug --log-dir=/var/log/avalanchego \
 	--staking-tls-cert-file="/avalanchego/certs/staker${NODE_ID}.crt" \
-	--staking-tls-key-file="/avalanchego/certs/staker${NODE_ID}.key"
+	--staking-tls-key-file="/avalanchego/certs/staker${NODE_ID}.key" \
+	--whitelisted-subnets="${WHITELISTED_SUBNETS}" \
+	--vm-aliases-file=/avalanchego/vm-aliases.json
