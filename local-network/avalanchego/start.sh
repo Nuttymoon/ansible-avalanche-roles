@@ -3,6 +3,8 @@
 bootstrap_node=$(getent hosts avalanchego-1 | awk '{ print $1 }')
 current_node=$(getent hosts "avalanchego-${NODE_ID}" | awk '{ print $1 }')
 
+whitelist=$(cat /avalanchego/whitelisted-subnets.txt)
+
 if [ "$NODE_ID" -eq 1 ]; then
 	bootstrap_ip=""
 	bootstrap_id=""
@@ -21,5 +23,5 @@ fi
 	--log-level=debug --log-dir=/var/log/avalanchego \
 	--staking-tls-cert-file="/avalanchego/certs/staker${NODE_ID}.crt" \
 	--staking-tls-key-file="/avalanchego/certs/staker${NODE_ID}.key" \
-	--whitelisted-subnets="${WHITELISTED_SUBNETS}" \
+	--whitelisted-subnets="$whitelist" \
 	--vm-aliases-file=/avalanchego/vm-aliases.json
