@@ -1,5 +1,5 @@
 ---
-- name: Check if subnet control users already exist
+- name: Check if subnet control user already exists
   uri:
     url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/keystore"
     method: POST
@@ -99,7 +99,7 @@
       to: "{{ p_chain_control_addresses[0] }}"
       sourceChain: X
 
-- name: Create subnet
+- name: Create the subnet
   include_tasks: submit-transaction-p.yml
   vars:
     method: platform.createSubnet
@@ -109,7 +109,7 @@
       username: "{{ avalanche_subnet_control_username }}"
       password: "{{ avalanche_subnet_control_password }}"
 
-- name: Get subnet ID
+- name: Get subnet info
   uri:
     url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/P"
     method: POST

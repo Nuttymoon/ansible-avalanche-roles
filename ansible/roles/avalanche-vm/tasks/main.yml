@@ -1,0 +1,78 @@
+---
+- name: Check if subnet exists
+  uri:
+    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/P"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: platform.getSubnets
+      params: {}
+      id: 1
+  register: subnets_list_res
+  failed_when: not (subnets_list_res.json.result | json_query('subnets[?id==`' + avalanche_subnet_id + '`]') | length)
+
+- name: Encode VM genesis data
+  uri:
+    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/vm/{{ avalanche_vm_alias }}"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "{{ avalanche_vm_service_name }}.encode"
+      params:
+        data: "{{ avalanche_vm_genesis_data }}"
+      id: 1
+  register: encode_data_res
+  failed_when: encode_data_res.json.error is defined
+
+- name: Set genesis_data
+  set_fact:
+    genesis_data: "{{ encode_data_res.json.result.bytes }}"
+
+- name: Create the blockchain
+  include_tasks: submit-transaction-p.yml
+  vars:
+    method: platform.createBlockchain
+    params:
+      subnetID: "{{ avalanche_subnet_id }}"
+      vmID: "{{ avalanche_vm_id }}"
+      name: "{{ avalanche_vm_name }}"
+      genesisData: "{{ genesis_data }}"
+      username: "{{ avalanche_subnet_control_username }}"
+      password: "{{ avalanche_subnet_control_password }}"
+
+- name: Get blockchain info
+  uri:
+    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/P"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: platform.getBlockchains
+      params: {}
+      id: 1
+  register: blockchains_list_res
+  failed_when: blockchains_list_res.json.error is defined
+
+- name: Set blockchain_info
+  set_fact:
+    blockchain_info: "{{ (blockchains_list_res.json.result | json_query('blockchains[?name==`' + avalanche_vm_name + '`]'))[0] }}"
+
+- name: Wait for blockchain to be validated
+  uri:
+    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/P"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: platform.getBlockchainStatus
+      params:
+        blockchainID: "{{ blockchain_info.id }}"
+      id: 1
+  register: blockchain_status_res
+  until: blockchain_status_res.json.result.status == "Validating"
+
+- name: Display blockchain information
+  debug:
+    var: blockchain_info
