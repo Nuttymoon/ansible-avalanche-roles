@@ -66,7 +66,9 @@
     x_chain_control_address: "{{ address_create_res.json.result.address }}"
 
 - name: Fund control user on X-Chain
-  include_tasks: submit-transaction-x.yml
+  import_role:
+    name: avalanche-transactions
+    tasks_from: submit-transaction-x.yml
   vars:
     method: avm.send
     params:
@@ -77,7 +79,9 @@
       to: "{{ x_chain_control_address }}"
 
 - name: Export AVAX from X-Chain to P-Chain
-  include_tasks: submit-transaction-x.yml
+  import_role:
+    name: avalanche-transactions
+    tasks_from: submit-transaction-x.yml
   vars:
     method: avm.export
     params:
@@ -89,7 +93,9 @@
       to: "{{ p_chain_control_addresses[0] }}"
 
 - name: Import AVAX to P-Chain addresses
-  include_tasks: submit-transaction-p.yml
+  import_role:
+    name: avalanche-transactions
+    tasks_from: submit-transaction-p.yml
   vars:
     method: platform.importAVAX
     params:
@@ -100,7 +106,9 @@
       sourceChain: X
 
 - name: Create the subnet
-  include_tasks: submit-transaction-p.yml
+  import_role:
+    name: avalanche-transactions
+    tasks_from: submit-transaction-p.yml
   vars:
     method: platform.createSubnet
     params:
@@ -145,7 +153,9 @@
     validators_ids: "{{ node_ids_res | json_query('results[*].json.result.nodeID') }}"
 
 - name: Add validators to the subnet
-  include_tasks: submit-transaction-p.yml
+  import_role:
+    name: avalanche-transactions
+    tasks_from: submit-transaction-p.yml
   vars:
     method: platform.addSubnetValidator
     params:
