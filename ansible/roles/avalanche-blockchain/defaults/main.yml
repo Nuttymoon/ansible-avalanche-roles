@@ -1,0 +1,34 @@
+---
+avalanche_nodes:
+  avalanchego_1:
+    host: 127.0.0.1
+    port: 9661
+  avalanchego_2:
+    host: 127.0.0.1
+    port: 9662
+  avalanchego_3:
+    host: 127.0.0.1
+    port: 9663
+
+avalanche_api_host: "{{ avalanche_nodes.avalanchego_1.host }}"
+avalanche_api_port: "{{ avalanche_nodes.avalanchego_1.port }}"
+
+# Subnet specs
+avalanche_subnet_id: aUC7SX8QGVwsbwS4YNuavVTbinjJLrPjNNjdpZbbcFZZFSxFd
+avalanche_subnet_control_username: control_key_1
+avalanche_subnet_control_password: c0ntr0l_k3y_1
+avalanche_subnet_validators_list:
+  - avalanchego_1
+  - avalanchego_2
+  - avalanchego_3
+
+# VM specs
+avalanche_vm_id: tGas3T58KzdjLHhBDMnH2TvrddhqTji5iZAMZ3RXs2NLpSnhH
+avalanche_vm_alias: timestampvm
+avalanche_vm_service_name: timestampvm
+
+# Blockchain specs
+avalanche_blockchain_aliases:
+  - timestamp
+avalanche_blockchain_name: Timestamp Chain
+avalanche_blockchain_genesis_data: Hello world

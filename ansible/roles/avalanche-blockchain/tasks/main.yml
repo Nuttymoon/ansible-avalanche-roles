@@ -21,7 +21,7 @@
       jsonrpc: "2.0"
       method: "{{ avalanche_vm_service_name }}.encode"
       params:
-        data: "{{ avalanche_vm_genesis_data }}"
+        data: "{{ avalanche_blockchain_genesis_data }}"
       id: 1
   register: encode_data_res
   failed_when: encode_data_res.json.error is defined
@@ -31,13 +31,15 @@
     genesis_data: "{{ encode_data_res.json.result.bytes }}"
 
 - name: Create the blockchain
-  include_tasks: submit-transaction-p.yml
+  import_role:
+    name: avalanche-transactions
+    tasks_from: submit-transaction-p.yml
   vars:
     method: platform.createBlockchain
     params:
       subnetID: "{{ avalanche_subnet_id }}"
       vmID: "{{ avalanche_vm_id }}"
-      name: "{{ avalanche_vm_name }}"
+      name: "{{ avalanche_blockchain_name }}"
       genesisData: "{{ genesis_data }}"
       username: "{{ avalanche_subnet_control_username }}"
       password: "{{ avalanche_subnet_control_password }}"
@@ -57,7 +59,7 @@
 
 - name: Set blockchain_info
   set_fact:
-    blockchain_info: "{{ (blockchains_list_res.json.result | json_query('blockchains[?name==`' + avalanche_vm_name + '`]'))[0] }}"
+    blockchain_info: "{{ (blockchains_list_res.json.result | json_query('blockchains[?name==`' + avalanche_blockchain_name + '`]'))[0] }}"
 
 - name: Wait for blockchain to be validated
   uri:
@@ -72,6 +74,20 @@
       id: 1
   register: blockchain_status_res
   until: blockchain_status_res.json.result.status == "Validating"
+
+- name: Create blockchain aliases
+  uri:
+    url: "http://{{ avalanche_nodes[item[0]].host }}:{{ avalanche_nodes[item[0]].port }}/ext/admin"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: admin.aliasChain
+      params:
+        chain: "{{ blockchain_info.id }}"
+        alias: "{{ item[1] }}"
+      id: 1
+  loop: "{{ avalanche_subnet_validators_list | product(avalanche_blockchain_aliases) | list }}"
 
 - name: Display blockchain information
   debug:
