@@ -12,26 +12,29 @@
   register: subnets_list_res
   failed_when: not (subnets_list_res.json.result | json_query('subnets[?id==`' + avalanche_subnet_id + '`]') | length)
 
-- name: Encode VM genesis data
+- name: Build VM genesis data
   uri:
     url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/vm/{{ avalanche_vm_alias }}"
     method: POST
     body_format: json
     body:
       jsonrpc: "2.0"
-      method: "{{ avalanche_vm_service_name }}.encode"
+      method: "{{ avalanche_vm_genesis_build_method }}"
       params:
         data: "{{ avalanche_blockchain_genesis_data }}"
       id: 1
   register: encode_data_res
   failed_when: encode_data_res.json.error is defined
 
+- debug:
+    var: encode_data_res
+
 - name: Set genesis_data
   set_fact:
-    genesis_data: "{{ encode_data_res.json.result.bytes }}"
+    genesis_data: "{{ encode_data_res.json.result[avalanche_vm_genesis_json_key] }}"
 
 - name: Create the blockchain
-  import_role:
+  include_role:
     name: avalanche-transactions
     tasks_from: submit-transaction-p.yml
   vars:
@@ -74,6 +77,8 @@
       id: 1
   register: blockchain_status_res
   until: blockchain_status_res.json.result.status == "Validating"
+  retries: 6
+  delay: 10
 
 - name: Create blockchain aliases
   uri:

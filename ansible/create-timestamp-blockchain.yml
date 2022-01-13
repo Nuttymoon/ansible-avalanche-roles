@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  roles:
+    - role: avalanche-blockchain
+      vars:
+        avalanche_subnet_id: 2KWZVTwyFmfLXz2Vf5CrRKS1fzZSiLyPBoN2tWTE7jDAmm8CDu

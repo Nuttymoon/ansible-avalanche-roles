@@ -66,7 +66,7 @@
     x_chain_control_address: "{{ address_create_res.json.result.address }}"
 
 - name: Fund control user on X-Chain
-  import_role:
+  include_role:
     name: avalanche-transactions
     tasks_from: submit-transaction-x.yml
   vars:
@@ -79,7 +79,7 @@
       to: "{{ x_chain_control_address }}"
 
 - name: Export AVAX from X-Chain to P-Chain
-  import_role:
+  include_role:
     name: avalanche-transactions
     tasks_from: submit-transaction-x.yml
   vars:
@@ -93,7 +93,7 @@
       to: "{{ p_chain_control_addresses[0] }}"
 
 - name: Import AVAX to P-Chain addresses
-  import_role:
+  include_role:
     name: avalanche-transactions
     tasks_from: submit-transaction-p.yml
   vars:
@@ -106,7 +106,7 @@
       sourceChain: X
 
 - name: Create the subnet
-  import_role:
+  include_role:
     name: avalanche-transactions
     tasks_from: submit-transaction-p.yml
   vars:
@@ -153,7 +153,7 @@
     validators_ids: "{{ node_ids_res | json_query('results[*].json.result.nodeID') }}"
 
 - name: Add validators to the subnet
-  import_role:
+  include_role:
     name: avalanche-transactions
     tasks_from: submit-transaction-p.yml
   vars:
@@ -171,3 +171,9 @@
 - name: Display subnet information
   debug:
     var: subnet_info
+
+- name: Manually restart subnet nodes with new subnet whitelisted
+  pause:
+    prompt: |
+      Manually restart all of the subnet nodes: {{ avalanche_subnet_validators_list | join(', ') }}
+      Make sure to add "{{ subnet_info.id }}" to  --whitelisted-subnets

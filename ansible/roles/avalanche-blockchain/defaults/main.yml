@@ -25,7 +25,8 @@ avalanche_subnet_validators_list:
 # VM specs
 avalanche_vm_id: tGas3T58KzdjLHhBDMnH2TvrddhqTji5iZAMZ3RXs2NLpSnhH
 avalanche_vm_alias: timestampvm
-avalanche_vm_service_name: timestampvm
+avalanche_vm_genesis_build_method: timestampvm.encode
+avalanche_vm_genesis_json_key: bytes
 
 # Blockchain specs
 avalanche_blockchain_aliases:
