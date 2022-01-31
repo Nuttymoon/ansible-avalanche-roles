@@ -14,7 +14,7 @@ x-services:
       - ./avalanchego/vm-aliases.json:/avalanchego/vm-aliases.json
       - ./avalanchego/whitelisted-subnets.txt:/avalanchego/whitelisted-subnets.txt
       - ./avalanchego/plugins/timestampvm:/avalanchego/build/plugins/timestampvm
-      - ./avalanchego/plugins/spePNvBxaWSYL2tB5e2xMmMNBQkXMN8z2XEbz1ML2Aahatwoc:/avalanchego/build/plugins/spePNvBxaWSYL2tB5e2xMmMNBQkXMN8z2XEbz1ML2Aahatwoc
+      # - ./avalanchego/plugins/spePNvBxaWSYL2tB5e2xMmMNBQkXMN8z2XEbz1ML2Aahatwoc:/avalanchego/build/plugins/spePNvBxaWSYL2tB5e2xMmMNBQkXMN8z2XEbz1ML2Aahatwoc
     depends_on:
       - avalanchego-1
 
