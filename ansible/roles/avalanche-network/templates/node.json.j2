@@ -1,6 +1,6 @@
 {
   "public-ip": "{{ ansible_host }}",
-  "http-host": "{{ ansible_host }}",
+  "http-host": "127.0.0.1",
   "http-port": {{ avalanchego_http_port }},
   "staking-port": {{ avalanchego_staking_port }},
   "api-admin-enabled": true,
@@ -8,7 +8,7 @@
   "snow-quorum-size": {{ avalanche_snow_quorum_size }},
   "db-dir": "{{ avalanchego_db_dir }}",
   "staking-enabled": true,
-  "network-id": "local",
+  "network-id": "{{ avalanche_network_id }}",
   {% if inventory_hostname == groups['bootstrap_node'][0] %}
   "bootstrap-ips": "",
   "bootstrap-ids": "",

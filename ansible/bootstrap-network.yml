@@ -7,3 +7,10 @@
   become: yes
   roles:
     - avalanche-network
+
+- hosts: bootstrap_node
+  tasks:
+    - import_role:
+        name: avalanche-network
+        tasks_from: prefunded-account.yml
+      when: avalanche_network_id == "local"

@@ -1,7 +1,7 @@
 ---
 - name: "P-Chain: call method {{ method }}"
   uri:
-    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/bc/P"
+    url: "http://{{ avalanche_api_host }}:{{ avalanche_http_port }}/ext/bc/P"
     method: POST
     body_format: json
     body:
@@ -15,7 +15,7 @@
 - block:
     - name: "P-Chain: wait for tx {{ call_res.json.result.txID }}"
       uri:
-        url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/bc/P"
+        url: "http://{{ avalanche_api_host }}:{{ avalanche_http_port }}/ext/bc/P"
         method: POST
         body_format: json
         body:

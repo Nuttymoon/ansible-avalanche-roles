@@ -1,0 +1,5 @@
+---
+- name: Restart avalanchego
+  service:
+    name: avalanchego
+    state: restarted
