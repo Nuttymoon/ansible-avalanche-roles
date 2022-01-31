@@ -1,0 +1,8 @@
+validator01 ansible_host=192.168.2.11 ansible_user=vagrant ansible_ssh_private_key_file=./.vagrant/machines/validator01_avalanche/virtualbox/private_key
+validator02 ansible_host=192.168.2.12 ansible_user=vagrant ansible_ssh_private_key_file=./.vagrant/machines/validator02_avalanche/virtualbox/private_key
+validator03 ansible_host=192.168.2.13 ansible_user=vagrant ansible_ssh_private_key_file=./.vagrant/machines/validator03_avalanche/virtualbox/private_key
+validator04 ansible_host=192.168.2.14 ansible_user=vagrant ansible_ssh_private_key_file=./.vagrant/machines/validator04_avalanche/virtualbox/private_key
+validator05 ansible_host=192.168.2.15 ansible_user=vagrant ansible_ssh_private_key_file=./.vagrant/machines/validator05_avalanche/virtualbox/private_key
+
+[bootstrap_node]
+validator01

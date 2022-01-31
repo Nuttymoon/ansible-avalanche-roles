@@ -1,0 +1,25 @@
+{
+  "public-ip": "{{ ansible_host }}",
+  "http-host": "{{ ansible_host }}",
+  "http-port": {{ avalanchego_http_port }},
+  "staking-port": {{ avalanchego_staking_port }},
+  "api-admin-enabled": true,
+  "snow-sample-size": {{ avalanche_snow_sample_size }},
+  "snow-quorum-size": {{ avalanche_snow_quorum_size }},
+  "db-dir": "{{ avalanchego_db_dir }}",
+  "staking-enabled": true,
+  "network-id": "local",
+  {% if inventory_hostname == groups['bootstrap_node'][0] %}
+  "bootstrap-ips": "",
+  "bootstrap-ids": "",
+  {% else %}
+  "bootstrap-ips": "{{ bootstrap_ip }}:{{ avalanchego_staking_port }}",
+  "bootstrap-ids": "{{ avalanche_bootstrap_node_id }}",
+  {% endif %}
+  "log-level": "debug",
+  "log-dir": "{{ avalanchego_log_dir }}",
+  "staking-tls-cert-file": "{{ avalanchego_certs_dir }}/{{ inventory_hostname }}.crt",
+  "staking-tls-key-file": "{{ avalanchego_certs_dir }}/{{ inventory_hostname }}.key",
+  "whitelisted-subnets": "{{ avalanche_whitelisted_subnets }}",
+  "vm-aliases-file": "{{ avalanchego_conf_dir }}/vm-aliases.json"
+}

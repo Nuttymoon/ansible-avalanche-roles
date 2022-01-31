@@ -1,0 +1,9 @@
+- hosts: bootstrap_node
+  become: yes
+  roles:
+    - avalanche-network
+
+- hosts: all:!bootstrap_node
+  become: yes
+  roles:
+    - avalanche-network

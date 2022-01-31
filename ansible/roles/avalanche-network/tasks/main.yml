@@ -1,0 +1,83 @@
+---
+- name: Download avalanchego binary
+  get_url:
+    url: "{{ avalanchego_binary_url }}"
+    dest: /tmp
+
+- name: Create avalanche dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ avalanchego_install_dir }}"
+    - "{{ avalanchego_conf_dir }}"
+    - "{{ avalanchego_log_dir }}"
+
+- name: Unpack avalanchego binary
+  unarchive:
+    src: "/tmp/{{ avalanchego_binary_name }}"
+    dest: "{{ avalanchego_install_dir }}"
+    remote_src: yes
+    creates: "{{ avalanchego_install_dir }}/avalanchego-v{{ avalanchego_version }}"
+
+- name: Upload nodes certificates
+  copy:
+    src: "files/certs/{{ inventory_hostname }}.{{ item }}"
+    dest: "{{ avalanchego_certs_dir }}/"
+  loop:
+    - crt
+    - key
+
+- name: Set bootstrap_ip
+  set_fact:
+    bootstrap_ip: "{{ hostvars[groups['bootstrap_node'][0]]['ansible_host'] }}"
+
+- name: Template node.json
+  template:
+    src: node.json.j2
+    dest: "{{ avalanchego_conf_dir }}/node.json"
+
+- name: Template avalanchego.service file
+  template:
+    src: avalanchego.service.j2
+    dest: /etc/systemd/system/avalanchego.service
+
+- name: Generate vm-aliases.json
+  copy:
+    dest: "{{ avalanchego_conf_dir }}/vm-aliases.json"
+    content: "{{ avalanche_vm_aliases | to_nice_json }}"
+
+- name: Make avalanche user owner of avalanche directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: "{{ avalanchego_user }}"
+    group: "{{ avalanchego_user }}"
+  loop:
+    - "{{ avalanche_root_dir }}"
+    - "{{ avalanchego_log_dir }}"
+
+- name: Reload systemctl daemons
+  systemd:
+    daemon_reload: yes
+
+- name: Start and enable avalanchego.service
+  service:
+    name: avalanchego
+    state: started
+    enabled: yes
+# - name: Start avalanchego without bootstrap node
+#   command: |
+#     {{ avalanchego_install_dir }}/avalanchego-v{{ avalanchego_version }}/avalanchego \
+#       --public-ip={{ ansible_host }} --http-host={{ ansible_host }} \
+#       --http-port={{ avalanche_http_port }} --staking-port={{ avalanche_staking_port }} \
+#       --api-admin-enabled=true \
+#       --snow-sample-size={{ avalanche_snow_sample_size }} --snow-quorum-size={{ avalanche_snow_quorum_size }} \
+#       --db-dir={{ avalanche_db_dir }} --staking-enabled=true \
+#       --network-id=local --bootstrap-ips= --bootstrap-ids= \
+#       --log-level=debug --log-dir=/var/log/avalanchego \
+#       --staking-tls-cert-file={{ avalanche_certs_dir }}/{{ inventory_hostname }}.crt \
+#       --staking-tls-key-file={{ avalanche_certs_dir }}/{{ inventory_hostname }}.key \
+#       --whitelisted-subnets={{ avalanche_whitelisted_subnets }} \
+#       --vm-aliases-file={{ avalanche_conf_dir }}/vm-aliases.json

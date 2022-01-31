@@ -27,7 +27,7 @@
       register: tx_status_res
       until: tx_status_res.json.result.status == "Committed"
       failed_when: tx_status_res.json.result.status in ["Dropped", "Unknown"]
-      retries: 6
+      retries: 3
       delay: 10
 
   rescue:
