@@ -1,7 +1,7 @@
 ---
 - name: Check if pre-funded account user already exists
   uri:
-    url: "http://127.0.0.1:{{ avalanchego_http_port }}/ext/keystore"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/keystore"
     method: POST
     body_format: json
     body:
@@ -12,7 +12,7 @@
 
 - name: Create pre-funded account user
   uri:
-    url: "http://127.0.0.1:{{ avalanchego_http_port }}/ext/keystore"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/keystore"
     method: POST
     body_format: json
     body:
@@ -28,7 +28,7 @@
 
 - name: Link pre-funded account to address on X-Chain
   uri:
-    url: "http://127.0.0.1:{{ avalanchego_http_port }}/ext/bc/X"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/bc/X"
     method: POST
     body_format: json
     body:
@@ -44,7 +44,7 @@
 
 - name: Link pre-funded account to address on P-Chain
   uri:
-    url: "http://127.0.0.1:{{ avalanchego_http_port }}/ext/bc/P"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/bc/P"
     method: POST
     body_format: json
     body:

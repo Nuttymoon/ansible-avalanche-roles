@@ -1,17 +1,7 @@
 ---
-avalanche_nodes:
-  avalanchego_1:
-    host: 127.0.0.1
-    port: 9661
-  avalanchego_2:
-    host: 127.0.0.1
-    port: 9662
-  avalanchego_3:
-    host: 127.0.0.1
-    port: 9663
-
-avalanche_api_host: "{{ avalanche_nodes.avalanchego_1.host }}"
-avalanche_api_port: "{{ avalanche_nodes.avalanchego_1.port }}"
+# HTTP API
+avalanchego_http_host: 127.0.0.1
+avalanchego_http_port: 9650
 
 # Used to send AVAX to subnet control keys addresses
 avalanche_fund_username: cresus
@@ -24,9 +14,5 @@ avalanche_subnet_threshold: 2
 avalanche_subnet_control_username: control_key_1
 avalanche_subnet_control_password: c0ntr0l_k3y_1
 avalanche_subnet_validators_weight: 1
-avalanche_subnet_validators_list:
-  - avalanchego_1
-  - avalanchego_2
-  - avalanchego_3
 avalanche_subnet_starttime: '{{ lookup(''pipe'', ''date -d "5 minutes" +%s'') }}'
 avalanche_subnet_endtime: '{{ lookup(''pipe'', ''date -d "1 month" +%s'') }}'

@@ -1,16 +1,13 @@
 - hosts: bootstrap_node
   become: yes
   roles:
-    - avalanche-network
+    - role: avalanche-network
+      vars:
+        avalanche_whitelisted_subnets: 2dCSRb8m4Sktr1kYST6AecNaXQD1qqWrD2CFvczJXP3ogbRAav
 
 - hosts: all:!bootstrap_node
   become: yes
   roles:
-    - avalanche-network
-
-- hosts: bootstrap_node
-  tasks:
-    - import_role:
-        name: avalanche-network
-        tasks_from: prefunded-account.yml
-      when: avalanche_network_id == "local"
+    - role: avalanche-network
+      vars:
+        avalanche_whitelisted_subnets: 2dCSRb8m4Sktr1kYST6AecNaXQD1qqWrD2CFvczJXP3ogbRAav

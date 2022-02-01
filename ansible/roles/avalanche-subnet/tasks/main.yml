@@ -1,7 +1,7 @@
 ---
 - name: Check if subnet control user already exists
   uri:
-    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/keystore"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/keystore"
     method: POST
     body_format: json
     body:
@@ -12,7 +12,7 @@
 
 - name: Create subnet control user
   uri:
-    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/keystore"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/keystore"
     method: POST
     body_format: json
     body:
@@ -28,7 +28,7 @@
 
 - name: Create subnet control addresses on P-Chain
   uri:
-    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/bc/P"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/bc/P"
     method: POST
     body_format: json
     body:
@@ -48,7 +48,7 @@
 
 - name: Create subnet control address on X-Chain
   uri:
-    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/bc/X"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/bc/X"
     method: POST
     body_format: json
     body:
@@ -119,7 +119,7 @@
 
 - name: Get subnet info
   uri:
-    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/P"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/P"
     method: POST
     body_format: json
     body:
@@ -134,9 +134,9 @@
   set_fact:
     subnet_info: "{{ (subnets_list_res.json.result | json_query('subnets[?contains(controlKeys, `' + p_chain_control_addresses[0] + '`)]'))[0] }}"
 
-- name: Get validators node IDs
+- name: Get node ID
   uri:
-    url: "http://{{ avalanche_nodes[item].host }}:{{ avalanche_nodes[item].port }}/ext/info"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/info"
     method: POST
     body_format: json
     body:
@@ -146,13 +146,14 @@
       id: 1
   register: node_ids_res
   failed_when: node_ids_res.json.error is defined
-  loop: "{{ avalanche_subnet_validators_list }}"
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['subnet_validators'] }}"
 
 - name: Set validators_ids
   set_fact:
     validators_ids: "{{ node_ids_res | json_query('results[*].json.result.nodeID') }}"
 
-- name: Add validators to the subnet
+- name: Add validator to the subnet
   include_role:
     name: avalanche-transactions
     tasks_from: submit-transaction-p.yml
@@ -175,5 +176,5 @@
 - name: Manually restart subnet nodes with new subnet whitelisted
   pause:
     prompt: |
-      Manually restart all of the subnet nodes: {{ avalanche_subnet_validators_list | join(', ') }}
+      Manually restart all of the subnet nodes: {{ groups['subnet_validators'] | join(', ') }}
       Make sure to add "{{ subnet_info.id }}" to  --whitelisted-subnets

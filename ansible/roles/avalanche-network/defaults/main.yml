@@ -14,6 +14,7 @@ avalanchego_log_dir: /var/log/avalanche/avalanchego
 
 # User & ports
 avalanchego_user: vagrant
+avalanchego_http_host: 127.0.0.1
 avalanchego_http_port: 9650
 avalanchego_staking_port: 9651
 

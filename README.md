@@ -2,6 +2,6 @@
 
 ## TO DO
 
-- [ ] Use VMs + SSH rather than Docker containers with local endpoint
+- [x] Use VMs + SSH rather than Docker containers with local endpoint
+- [ ] Check that a subnet with the same validators does not already exist before creation
 - [ ] Secure fund private key in vault
-- [ ] Provide the genesis state as a file

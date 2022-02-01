@@ -6,3 +6,6 @@ validator05 ansible_host=192.168.2.15 ansible_user=vagrant ansible_ssh_private_k
 
 [bootstrap_node]
 validator01
+
+[subnet_validators]
+validator0[1:3]

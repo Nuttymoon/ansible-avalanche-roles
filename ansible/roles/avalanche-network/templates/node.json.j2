@@ -1,6 +1,6 @@
 {
   "public-ip": "{{ ansible_host }}",
-  "http-host": "127.0.0.1",
+  "http-host": "{{ avalanchego_http_host }}",
   "http-port": {{ avalanchego_http_port }},
   "staking-port": {{ avalanchego_staking_port }},
   "api-admin-enabled": true,
