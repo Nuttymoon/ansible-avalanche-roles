@@ -1,26 +1,15 @@
 ---
-avalanche_nodes:
-  avalanchego_1:
-    host: 127.0.0.1
-    port: 9661
-  avalanchego_2:
-    host: 127.0.0.1
-    port: 9662
-  avalanchego_3:
-    host: 127.0.0.1
-    port: 9663
+# HTTP API
+avalanchego_http_host: 127.0.0.1
+avalanchego_http_port: 9650
 
-avalanche_api_host: "{{ avalanche_nodes.avalanchego_1.host }}"
-avalanche_api_port: "{{ avalanche_nodes.avalanchego_1.port }}"
+avalanchego_version: 1.7.3
+avalanchego_plugins_dir: /opt/avalanche/avalanchego/avalanchego-v{{ avalanchego_version }}/plugins
 
 # Subnet specs
 avalanche_subnet_id: aUC7SX8QGVwsbwS4YNuavVTbinjJLrPjNNjdpZbbcFZZFSxFd
 avalanche_subnet_control_username: control_key_1
 avalanche_subnet_control_password: c0ntr0l_k3y_1
-avalanche_subnet_validators_list:
-  - avalanchego_1
-  - avalanchego_2
-  - avalanchego_3
 
 # VM specs
 avalanche_vm_id: tGas3T58KzdjLHhBDMnH2TvrddhqTji5iZAMZ3RXs2NLpSnhH

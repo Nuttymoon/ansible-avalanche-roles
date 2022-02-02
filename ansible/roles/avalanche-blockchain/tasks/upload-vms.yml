@@ -1,0 +1,9 @@
+---
+- name: Upload VM binaries to plugins dir
+  copy:
+    src: files/plugins/
+    dest: "{{ avalanchego_plugins_dir }}/"
+    mode: "0755"
+  notify: Restart avalanchego
+
+- meta: flush_handlers

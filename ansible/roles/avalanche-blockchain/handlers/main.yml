@@ -1,0 +1,6 @@
+---
+- name: Restart avalanchego
+  throttle: 1
+  service:
+    name: avalanchego
+    state: restarted

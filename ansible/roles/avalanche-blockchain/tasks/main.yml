@@ -1,7 +1,27 @@
 ---
+- name: "Wait for avalanchego to bind to port {{ avalanchego_http_port }}"
+  wait_for:
+    port: "{{ avalanchego_http_port }}"
+
+- name: Wait for P-Chain to be bootstrapped
+  uri:
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/info"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: info.isBootstrapped
+      params:
+        chain: P
+      id: 1
+  register: pchain_status_res
+  until: pchain_status_res.json.result.isBootstrapped
+  retries: 6
+  delay: 10
+
 - name: Check if subnet exists
   uri:
-    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/P"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/P"
     method: POST
     body_format: json
     body:
@@ -14,7 +34,7 @@
 
 - name: Build VM genesis data
   uri:
-    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/vm/{{ avalanche_vm_alias }}"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/vm/{{ avalanche_vm_alias }}"
     method: POST
     body_format: json
     body:
@@ -25,9 +45,6 @@
       id: 1
   register: encode_data_res
   failed_when: encode_data_res.json.error is defined
-
-- debug:
-    var: encode_data_res
 
 - name: Set genesis_data
   set_fact:
@@ -49,7 +66,7 @@
 
 - name: Get blockchain info
   uri:
-    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/P"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/P"
     method: POST
     body_format: json
     body:
@@ -66,7 +83,7 @@
 
 - name: Wait for blockchain to be validated
   uri:
-    url: "http://{{ avalanche_api_host }}:{{ avalanche_api_port }}/ext/P"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/P"
     method: POST
     body_format: json
     body:
@@ -82,7 +99,7 @@
 
 - name: Create blockchain aliases
   uri:
-    url: "http://{{ avalanche_nodes[item[0]].host }}:{{ avalanche_nodes[item[0]].port }}/ext/admin"
+    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/admin"
     method: POST
     body_format: json
     body:
@@ -92,7 +109,8 @@
         chain: "{{ blockchain_info.id }}"
         alias: "{{ item[1] }}"
       id: 1
-  loop: "{{ avalanche_subnet_validators_list | product(avalanche_blockchain_aliases) | list }}"
+  delegate_to: "{{ item[0] }}"
+  loop: "{{ groups['subnet_validators'] | product(avalanche_blockchain_aliases) | list }}"
 
 - name: Display blockchain information
   debug:
