@@ -40,8 +40,7 @@
     body:
       jsonrpc: "2.0"
       method: "{{ avalanche_vm_genesis_build_method }}"
-      params:
-        data: "{{ avalanche_blockchain_genesis_data }}"
+      params: "{{ avalanche_blockchain_genesis_params }}"
       id: 1
   register: encode_data_res
   failed_when: encode_data_res.json.error is defined
@@ -94,7 +93,7 @@
       id: 1
   register: blockchain_status_res
   until: blockchain_status_res.json.result.status == "Validating"
-  retries: 6
+  retries: 12
   delay: 10
 
 - name: Create blockchain aliases

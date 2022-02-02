@@ -3,11 +3,11 @@
   roles:
     - role: avalanche-network
       vars:
-        avalanche_whitelisted_subnets: 2dCSRb8m4Sktr1kYST6AecNaXQD1qqWrD2CFvczJXP3ogbRAav
+        avalanche_whitelisted_subnets: ZWzU5uaz7yonAHudWuDyxxyiJHGVQ8ihrPEcMnhk4TDAtNJms
 
 - hosts: all:!bootstrap_node
   become: yes
   roles:
     - role: avalanche-network
       vars:
-        avalanche_whitelisted_subnets: 2dCSRb8m4Sktr1kYST6AecNaXQD1qqWrD2CFvczJXP3ogbRAav
+        avalanche_whitelisted_subnets: ZWzU5uaz7yonAHudWuDyxxyiJHGVQ8ihrPEcMnhk4TDAtNJms

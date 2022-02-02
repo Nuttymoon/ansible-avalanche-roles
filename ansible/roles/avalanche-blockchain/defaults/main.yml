@@ -21,4 +21,5 @@ avalanche_vm_genesis_json_key: bytes
 avalanche_blockchain_aliases:
   - timestamp
 avalanche_blockchain_name: Timestamp Chain
-avalanche_blockchain_genesis_data: Hello world
+avalanche_blockchain_genesis_params:
+  data: Hello world
