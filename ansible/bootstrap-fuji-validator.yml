@@ -1,0 +1,10 @@
+- hosts: validator01
+  become: yes
+  roles:
+    - role: avalanche-validator
+      vars:
+        avalanchego_version: 1.7.4
+        avalanche_network_id: fuji
+        avalanche_use_static_certs: no
+        avalanche_snow_sample_size: 20
+        avalanche_snow_quorum_size: 14

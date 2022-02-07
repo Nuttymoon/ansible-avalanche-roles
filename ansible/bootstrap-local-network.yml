@@ -1,13 +1,15 @@
 - hosts: bootstrap_node
   become: yes
   roles:
-    - role: avalanche-network
+    - role: avalanche-validator
       vars:
+        avalanchego_user: vagrant
         avalanche_whitelisted_subnets: ZWzU5uaz7yonAHudWuDyxxyiJHGVQ8ihrPEcMnhk4TDAtNJms
 
 - hosts: all:!bootstrap_node
   become: yes
   roles:
-    - role: avalanche-network
+    - role: avalanche-validator
       vars:
+        avalanchego_user: vagrant
         avalanche_whitelisted_subnets: ZWzU5uaz7yonAHudWuDyxxyiJHGVQ8ihrPEcMnhk4TDAtNJms
