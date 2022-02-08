@@ -1,10 +1,14 @@
-# Avalanche subnet
+# Ansible Avalanche Roles
 
-Ansible roles to bootstrap Avalanche nodes and deploy subnets and blockchains.
+Ansible roles to bootstrap [Avalanche](https://docs.avax.network/) validators, create subnets and blockchains.
+
+## Disclaimer
+
+This project is a work in progress. It is provided as is without any guaranty.
 
 ## Usage
 
-### Environment
+### Vagrant environment
 
 2 Vagrant environments are available:
 
@@ -21,7 +25,16 @@ ln -sf Vagrantfile.local Vagrantfile
 vagrant up
 ```
 
-**Note:** The Docker compose setup is not working.
+**Note:** The `fuji` Vagrant environment is provided as an example. I do not recommand to run a Fuji validator on such a small VM on your PC.
+
+### Custom remote server
+
+To run the playbooks on custom servers (I use this to provision my Fuji validator) create a `hosts` file in `remote/`:
+
+```sh
+mkdir -p remote
+echo "validator01 ansible_host=$IP_ADDRESS ansible_user=root" > remote/myvalidator.hosts
+```
 
 ### Provisioning
 
@@ -60,9 +73,15 @@ vagrant up
 #### Fuji validator
 
 1. Set Ansible inventory to `fuji`
+
    ```sh
+   # Local VM
    export ANSIBLE_INVENTORY=ansible/inventory/fuji.hosts
+
+   # Or custom remote hosts
+   export ANSIBLE_INVENTORY=remote/myvalidator.hosts
    ```
+
 2. Install + configure avalanchego
    ```sh
    ansible-playbook ansible/bootstrap-fuji-validator.yml
@@ -70,7 +89,8 @@ vagrant up
 
 ## TO DO
 
-- [x] Use VMs + SSH rather than Docker containers with local endpoint
-- [ ] Check that a subnet with the same validators does not already exist before creation
+- [ ] Create an Ansible collection to distribute the roles
+- [ ] Check that a subnet with the same validators does not already exist before creation and prompt for confirmation
+- [ ] Check that a blockchain using the same VM does not already exist before creation and prompt for confirmation
 - [ ] Secure fund private key in vault
 - [ ] Always recreate chain aliases on startup

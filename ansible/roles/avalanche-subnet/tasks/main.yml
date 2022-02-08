@@ -136,7 +136,7 @@
 
 - name: Get node ID
   uri:
-    url: "http://{{ avalanchego_http_host }}:{{ avalanchego_http_port }}/ext/info"
+    url: "http://{{ hostvars[item]['avalanchego_http_host'] }}:{{ avalanchego_http_port }}/ext/info"
     method: POST
     body_format: json
     body:

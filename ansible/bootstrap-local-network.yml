@@ -4,7 +4,7 @@
     - role: avalanche-validator
       vars:
         avalanchego_user: vagrant
-        avalanche_whitelisted_subnets: ZWzU5uaz7yonAHudWuDyxxyiJHGVQ8ihrPEcMnhk4TDAtNJms
+        avalanche_whitelisted_subnets: 2pfgTorPW9emxzCPCDkY3TQZRLSxjJY3ejPLkrJRGoE2B3WcLv
 
 - hosts: all:!bootstrap_node
   become: yes
@@ -12,4 +12,4 @@
     - role: avalanche-validator
       vars:
         avalanchego_user: vagrant
-        avalanche_whitelisted_subnets: ZWzU5uaz7yonAHudWuDyxxyiJHGVQ8ihrPEcMnhk4TDAtNJms
+        avalanche_whitelisted_subnets: 2pfgTorPW9emxzCPCDkY3TQZRLSxjJY3ejPLkrJRGoE2B3WcLv

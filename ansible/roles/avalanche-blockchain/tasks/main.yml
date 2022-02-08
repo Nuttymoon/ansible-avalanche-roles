@@ -1,6 +1,7 @@
 ---
 - name: "Wait for avalanchego to bind to port {{ avalanchego_http_port }}"
   wait_for:
+    host: "{{ avalanchego_http_host }}"
     port: "{{ avalanchego_http_port }}"
 
 - name: Wait for P-Chain to be bootstrapped
