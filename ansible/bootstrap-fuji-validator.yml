@@ -4,7 +4,8 @@
     - role: avalanche-validator
       vars:
         avalanchego_version: 1.7.4
-        avalanche_network_id: fuji
-        avalanche_use_static_certs: no
-        avalanche_snow_sample_size: 20
-        avalanche_snow_quorum_size: 14
+        avalanchego_network_id: fuji
+        avalanchego_use_existing_certs: no
+        avalanchego_snow_sample_size: 20
+        avalanchego_snow_quorum_size: 14
+        avalanche_whitelisted_subnets: Ai42MkKqk8yjXFCpoHXw7rdTWSHiKEMqh5h8gbxwjgkCUfkrk

@@ -12,8 +12,9 @@ avalanchego_db_dir: "{{ avalanche_root_dir }}/db"
 avalanchego_certs_dir: "{{ avalanche_root_dir }}/certs"
 avalanchego_log_dir: /var/log/avalanche/avalanchego
 
-# User & ports
+# User & network
 avalanchego_user: avalanche
+avalanchego_use_static_ip: yes
 avalanchego_http_host: 127.0.0.1
 avalanchego_http_port: 9650
 avalanchego_staking_port: 9651
@@ -22,11 +23,11 @@ avalanchego_staking_port: 9651
 avalanchego_log_level: info
 
 # Consensus & bootstrapping
-avalanche_network_id: local
-avalanche_use_static_certs: yes
-avalanche_snow_sample_size: 2
-avalanche_snow_quorum_size: 2
-avalanche_bootstrap_node_id: NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg
+avalanchego_network_id: local
+avalanchego_use_existing_certs: yes
+avalanchego_snow_sample_size: 2
+avalanchego_snow_quorum_size: 2
+avalanchego_bootstrap_node_id: NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg
 
 # Pre-funded account (only on local network)
 avalanche_prefunded_username: cresus

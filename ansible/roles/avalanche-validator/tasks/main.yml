@@ -31,12 +31,12 @@
   loop:
     - crt
     - key
-  when: avalanche_use_static_certs
+  when: avalanchego_use_existing_certs
 
 - name: Set bootstrap_ip
   set_fact:
     bootstrap_ip: "{{ hostvars[groups['bootstrap_node'][0]]['ansible_host'] }}"
-  when: avalanche_network_id == 'local'
+  when: avalanchego_network_id == 'local'
 
 - name: Template node.json
   template:

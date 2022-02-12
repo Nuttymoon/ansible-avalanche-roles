@@ -4,7 +4,7 @@
     - import_role:
         name: avalanche-validator
         tasks_from: prefunded-account.yml
-      when: avalanche_network_id == "local"
+      when: avalanchego_network_id == "local"
 
 - hosts: subnet_validators[0]
   roles:
