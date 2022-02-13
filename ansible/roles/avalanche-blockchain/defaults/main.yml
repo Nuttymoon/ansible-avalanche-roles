@@ -3,8 +3,8 @@
 avalanchego_http_host: 127.0.0.1
 avalanchego_http_port: 9650
 
-avalanchego_version: 1.7.3
-avalanchego_plugins_dir: /opt/avalanche/avalanchego/avalanchego-v{{ avalanchego_version }}/plugins
+avalanchego_user: avalanche
+avalanchego_plugins_dir: /opt/avalanche/avalanchego/current/plugins
 
 # Subnet specs
 avalanche_subnet_id: aUC7SX8QGVwsbwS4YNuavVTbinjJLrPjNNjdpZbbcFZZFSxFd

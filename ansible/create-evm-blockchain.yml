@@ -6,13 +6,13 @@
         name: avalanche-blockchain
         tasks_from: upload-vms.yml
       vars:
-        avalanche_subnet_id: 2pfgTorPW9emxzCPCDkY3TQZRLSxjJY3ejPLkrJRGoE2B3WcLv
+        avalanche_subnet_id: yLBzHpdfhm66YdwXYFcHSsu4dBfRc5VgndmYqEn6JZ1ys1YwS
 
 - hosts: subnet_validators[0]
   roles:
     - role: avalanche-blockchain
       vars:
-        avalanche_subnet_id: 2pfgTorPW9emxzCPCDkY3TQZRLSxjJY3ejPLkrJRGoE2B3WcLv
+        avalanche_subnet_id: yLBzHpdfhm66YdwXYFcHSsu4dBfRc5VgndmYqEn6JZ1ys1YwS
         avalanche_vm_id: spePNvBxaWSYL2tB5e2xMmMNBQkXMN8z2XEbz1ML2Aahatwoc
         avalanche_vm_alias: subnetevm
         avalanche_vm_genesis_build_method: subnetevm.buildGenesis

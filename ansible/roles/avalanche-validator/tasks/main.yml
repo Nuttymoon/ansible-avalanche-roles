@@ -8,13 +8,15 @@
     url: "{{ avalanchego_binary_url }}"
     dest: /tmp
 
-- name: Create avalanche dirs
+- name: Create avalanchego dirs
   file:
     path: "{{ item }}"
     state: directory
   loop:
-    - "{{ avalanchego_install_dir }}"
-    - "{{ avalanchego_conf_dir }}"
+    - "{{ avalanchego_install_dir }}/current/plugins"
+    - "{{ avalanchego_db_dir }}"
+    - "{{ avalanchego_conf_dir }}/vms"
+    - "{{ avalanchego_certs_dir }}"
     - "{{ avalanchego_log_dir }}"
 
 - name: Unpack avalanchego binary
@@ -23,6 +25,20 @@
     dest: "{{ avalanchego_install_dir }}"
     remote_src: yes
     creates: "{{ avalanchego_install_dir }}/avalanchego-v{{ avalanchego_version }}"
+
+- name: Create a symlink to current avalanchego binary
+  file:
+    src: "{{ avalanchego_install_dir }}/avalanchego-v{{ avalanchego_version }}/avalanchego"
+    dest: "{{ avalanchego_install_dir }}/current/avalanchego"
+    state: link
+  notify: Restart avalanchego
+
+- name: Create a symlink to current evm binary
+  file:
+    src: "{{ avalanchego_install_dir }}/avalanchego-v{{ avalanchego_version }}/plugins/evm"
+    dest: "{{ avalanchego_install_dir }}/current/plugins/evm"
+    state: link
+  notify: Restart avalanchego
 
 - name: Upload nodes certificates
   copy:
@@ -50,9 +66,9 @@
     dest: /etc/systemd/system/avalanchego.service
   notify: Restart avalanchego
 
-- name: Generate vm-aliases.json
+- name: Generate VMs aliases.json
   copy:
-    dest: "{{ avalanchego_conf_dir }}/vm-aliases.json"
+    dest: "{{ avalanchego_conf_dir }}/vms/aliases.json"
     content: "{{ avalanche_vm_aliases | to_nice_json }}"
   notify: Restart avalanchego
 
@@ -64,7 +80,10 @@
     owner: "{{ avalanchego_user }}"
     group: "{{ avalanchego_user }}"
   loop:
-    - "{{ avalanche_root_dir }}"
+    - "{{ avalanchego_install_dir }}"
+    - "{{ avalanchego_db_dir }}"
+    - "{{ avalanchego_conf_dir }}"
+    - "{{ avalanchego_certs_dir }}"
     - "{{ avalanchego_log_dir }}"
 
 - name: Reload systemctl daemons

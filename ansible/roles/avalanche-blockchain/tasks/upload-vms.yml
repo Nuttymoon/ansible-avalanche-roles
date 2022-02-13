@@ -4,6 +4,8 @@
     src: files/plugins/
     dest: "{{ avalanchego_plugins_dir }}/"
     mode: "0755"
+    owner: "{{ avalanchego_user }}"
+    group: "{{ avalanchego_user }}"
   notify: Restart avalanchego
 
 - meta: flush_handlers
